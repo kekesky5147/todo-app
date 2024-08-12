@@ -1,13 +1,35 @@
-import React, { useRef } from "react"
+// eslint-disable-next-line no-unused-vars
+import React, { useRef, useState } from "react"
 import todo1 from "../assets/todo1.png"
 import Todoitems from "./Todoitems"
 
 const Todo = () => {
+  const [todoList, setTodoList] = useState([])
+
   const inputRef = useRef()
 
   const add = () => {
     const inputText = inputRef.current.value.trim()
     console.log(inputText)
+
+    if (inputText === "") {
+      return null
+    }
+
+    const newTodo = {
+      id: Date.now(),
+      text: inputText,
+      isComplete: false,
+    }
+
+    setTodoList((prev) => [...prev, newTodo])
+    inputRef.current.value = ""
+  }
+
+  const deleteTodo = (id) => {
+    setTodoList((prvTodos) => {
+      return prvTodos.filter((todo) => todo.id !== id)
+    })
   }
 
   return (
@@ -39,9 +61,17 @@ const Todo = () => {
       {/* -----To-do list----- */}
 
       <div>
-        <Todoitems text="Learn Cording" />
-        <Todoitems text="Learn Cording day2" />
-        <Todoitems text="Learn Cording day3" />
+        {todoList.map((item, index) => {
+          return (
+            <Todoitems
+              key={index}
+              text={item.text}
+              id={item.id}
+              isComplete={item.isComplete}
+              deleteTodo={deleteTodo}
+            />
+          )
+        })}
       </div>
     </div>
   )
