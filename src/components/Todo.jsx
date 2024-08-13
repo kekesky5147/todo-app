@@ -1,10 +1,14 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import todo1 from "../assets/todo1.png"
 import Todoitems from "./Todoitems"
 
 const Todo = () => {
-  const [todoList, setTodoList] = useState([])
+  const [todoList, setTodoList] = useState(
+    localStorage.getItem("todos")
+      ? JSON.parse(localStorage.getItem("todos"))
+      : []
+  )
 
   const inputRef = useRef()
 
@@ -31,6 +35,21 @@ const Todo = () => {
       return prvTodos.filter((todo) => todo.id !== id)
     })
   }
+
+  const toggle = (id) => {
+    setTodoList((prevTodos) => {
+      return prevTodos.map((todo) => {
+        if (todo.id === id) {
+          return { ...todo, isComplete: !todo.isComplete }
+        }
+        return todo
+      })
+    })
+  }
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todoList))
+  }, [todoList])
 
   return (
     <div className="bg-black place-self-center w-11/12  max-w-md flex flex-col p-7 min-h-[550px] rounded-xl">
@@ -69,6 +88,7 @@ const Todo = () => {
               id={item.id}
               isComplete={item.isComplete}
               deleteTodo={deleteTodo}
+              toggle={toggle}
             />
           )
         })}
